@@ -1,29 +1,33 @@
 #include<iostream>
 #include<cstdlib>
-#include<cmath>
-#include<ctime>
-#include<cstring>
 #include<cstdio>
+#include<cmath>
 #include<algorithm>
+#include<cstring>
 using namespace std;
+// string s1,s2;
+const int N=1e6+5;
+char s1[N],s2[N];
+int nx[N];
 int main()
 {
-    srand(time(NULL));
-    int ok=0,sum=0;
-    double suma = 0,sumb = 0, sumc = 0,A,SA=0;
-    for(int i=0;i<100000;i++){
-        double x=rand()/double(RAND_MAX),y=rand()/double(RAND_MAX);
-        if(x>y) swap(x,y);
-        double a=x,b=y-x,c=1-y;
-        if(a+b>c&&(c<(a-b)||c<(b-a))) ++ok;
-        ++sum;
-        SA += max(max(a,b),c);
-        suma = ((i)*(suma)+a)/(i+1);
-        sumb = ((i)*(sumb)+b)/(i+1);
-        sumc = ((i)*(sumc)+c)/(i+1);
+    int l1,l2;
+    // cin>>s1>>s2;
+    // l1=s1.size(); l2=s2.size();
+    scanf("%s%s",s1,s2);
+    l1=strlen(s1); l2=strlen(s2);
+    int t=-1;
+    nx[0]=-1;
+    for(int i=0;i<l2;i++){
+        while(t>=0&&s2[i]!=s2[t]) t=nx[t];
+        nx[i+1]=++t;
     }
-        cout<<suma<<" "<<sumb<<" "<<sumc<<endl;
-        printf("%d %d %lf\n",ok,sum,A/100000);
-
+    t=0;
+    for(int i=0;i<l1;i++){
+        while(t>=0&&s2[t]!=s1[i]) t=nx[t];
+        if(t==l2-1) printf("%d\n",i-l2+2);
+        ++t;
+    }
+    for(int i=1;i<=l2;i++) printf("%d ",nx[i]); puts("");
     return 0;
 }

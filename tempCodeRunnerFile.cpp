@@ -1,5 +1,3 @@
 
-        sumb = ((i-1)*(sumb)+b)/i;
-        sumc = ((i-1)*(sumc)+c)/i;
-        cout<<a<<" "<<b<<" "<<c<<endl;
-        cout<<suma<<" "<<sumb<<" "<<sumc<<endl;
+    t=0;
+    for(int i=0;i<l2;i++){
