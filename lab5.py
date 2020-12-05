@@ -1,129 +1,46 @@
-#lab 1
-import smbus
+import random
 import time
+num_list= [random.randint(1,100000) for i in range(100000)]
 
-address = 0x68
-register = 0x00
-bus = smbus.SMbus(1)
-Fixtime = [0x00,0x00,0x18,0x03,0x12,0x06,0x19]
+'''顺序检索
+时间复杂度：O(n)
+优点：数据存储可以无序，插入元素可以直接加在表尾
+缺点：检索时间长
+'''
+def direct_search(key):
+    for i in range(len(num_list)):
+        if(num_list[i] == key):
+            print(i)
 
-def ds3231SetTime():
-    bus.write_12c_block_data(address, register, Fixtime)
+'''二分检索
+时间复杂度：O(log(n))
+优点：比较次数少，检索速度快
+缺点：需要按照关键码排序，不易更新
+'''
+def binarySearch(key):
+    low,high = 0,len(num_list)-1
+    while(low<=high):
+        mid = (low+high)//2
+        if num_list[mid]==key:
+            print("找到目标，索引号是:",mid)
+            break
+        else:
+            if num_list[mid]<key:
+                low,high =mid+1,high
+            else:
+                low,high =low,mid-1
+    else:
+        print("未找到")
 
-def ds3231ReadTime():
-    return bus.read_12c_block_data(address, register,7)
-
-ds3231SetTime()
-ds3231ReadTime()
-
-#lab2
-
-from pyswip import Prolog
-prolog = Prolog()
-prolog.consult('bird.pl')
-prolog.assertz('color(blue)')
-prolog.assertz('serson(all_year)')
-prolog.assertz('size(small)')
-for result in prolog.query('bird(X)'):
-    print(result['X'])
-
-#lab2.5
-from pyswip import Prolog, registerForeign
-
-def hello(t):
-    print('Hello,',t)
-hello.arity = 1
-
-registerForeign(hello)
-
-prolog = Prolog()
-prolog.assertz('father(michael, john)')#注意一下这里的空格有无效果
-prolog.assertz('father(michael, gina)')
-print(list(prolog.query('father(michael,X),hello(X)')))
-
-#lab3
-/* animal.pro
-    animal identification game.
-    start with ?- go. */
-go :- hypothesize(Animal),
-    write('I guess that the animal is: '),
-    write(Animal),
-    nl,
-    undo.
-
-/* hypotheses to be tested */
-hypothesize(cheetah) :- cheetah, !.
-hypothesize(tiger) :- tiger, !.
-hypothesize(giraffe) :- giraffe, !.
-hypothesize(zebra) :- zebra, !.
-hypothesize(ostrich) :- ostrich, !.
-hypothesize(penguin) :- penguin, !.
-hypothesize(albatross) :- albatross, !.
-hypothesize(unknown). /* no diagnosis */
-
-/* animal identification rules */
-cheetah :- mammal,
-    carnivore,
-    verify(has_tawny_color),
-    verify(has_dark_spots).
-tiger :- mammal,
-    carnivore,
-    verify(has_tawny_color),
-    verify(has_black_stripes).
-giraffe :- ungulate,
-    verify(has_long_neck),
-    verify(has_long_legs).
-zebra :- ungulate,
-    verify(has_black_stripes).
-ostrich :- bird,
-    verify(does_not_fly),
-    verify(has_long_neck).
-penguin :- bird,
-    verify(does_not_fly),
-    verify(swims),
-    verify(is_black_and_white).
-albatross :- bird,
-    verify(appears_in_story_Ancient_Mariner),
-    verify(flys_well).
-
-/* classification rules */
-mammal :- verify(has_hair), !.
-mammal :- verify(gives_milk).
-bird :- verify(has_feathers), !.
-bird :- verify(flys),
-    verify(lays_eggs).
-carnivore :- verify(eats_meat), !.
-carnivore :- verify(has_pointed_teeth),
-    verify(has_claws),
-    verify(has_forward_eyes).
-ungulate :- mammal,
-    verify(has_hooves), !.
-ungulate :- mammal,
-    verify(chews_cud).
-/* how to ask questions */
-ask(Question) :-
-    write('Does the animal have the following attribute: '),
-    write(Question),
-    write('? '),
-    read(Response),
-    nl,
-    ( (Response == yes ; Response == y)
-        ->
-        assert(yes(Question)) ;
-        assert(no(Question)), fail).
-:- dynamic yes/1,no/1.
-
-/* How to verify something */
-verify(S) :-
-    (yes(S)
-    ->
-    true ;
-    (no(S)
-    ->
-    fail ;
-    ask(S))).
-
-/* undo all yes/no assertions */
-undo :- retract(yes(_)),fail.
-undo :- retract(no(_)),fail.
-undo.
+start1 = time.time()
+for i in range(100):
+    direct_search(random.randint(1,100000))
+end1  = time.time()
+num_list.sort()
+start2 = time.time()
+for i in range(100):
+    binarySearch(random.randint(1,100000))
+end2  = time.time()
+print("\n在长度为100000，取值为1~100000的序列中：")
+print("100次直接检索用时",end1-start1,"秒")
+print("100次二分法检索用时",end2-start2,"秒")
